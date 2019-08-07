@@ -1,0 +1,21 @@
+{
+  "manifest": {
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "TrainingCognitivo",
+          "sourceDir": "lambda/eu-west-1_TrainingCognitivo"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "publishingInformation": {
+      "locales": {
+        "it-IT": {
+          "name": "Training cognitivo"
+        }
+      }
+    }
+  }
+}

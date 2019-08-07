@@ -1,0 +1,7 @@
+.ask/
+.idea/
+
+node_modules/
+
+*.zip
+*.DS_Store
