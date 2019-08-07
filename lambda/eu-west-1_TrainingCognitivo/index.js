@@ -1,95 +1,57 @@
+const Alexa = require('ask-sdk-core');
+// const persistenceAdapter = require('ask-sdk-s3-persistence-adapter');
 
-const Alexa = require('ask-sdk');
+const { HelpIntentHandler, CancelAndStopIntentHandler, SessionEndedRequestHandler, IntentReflectorHandler,ErrorHandler } = require('./handlers/standard.js');
+const { FirstLaunchRequestHandler, NameRequestHandler } = require('./handlers/meeting.js');
 
-const FirstTimeLaunchRequestHandler = {
-  canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
-  },
-  handle(handlerInput) {
-    const speakOutput = "Ciao";
-    handlerInput.responseBuilder.speak(speakOutput);
-    return NameRequestHandler.handle(handlerInput);
-  }
-};
-
-const NameRequestHandler = {
-  canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
-  },
-  handle(handlerInput) {
-    const speakOutput = "Come ti chiami?";
-    return handlerInput.responseBuilder
-      .speak(speakOutput)
-      // .reprompt(speakOutput)
-      .getResponse();
-  }
-};
-
-
-const HelpHandler = {
-  canHandle(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
-      && request.intent.name === 'AMAZON.HelpIntent';
-  },
-  handle(handlerInput) {
-    return handlerInput.responseBuilder
-      .speak(HELP_MESSAGE)
-      .reprompt(HELP_REPROMPT)
-      .getResponse();
-  },
-};
-
-const ExitHandler = {
-  canHandle(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
-      && (request.intent.name === 'AMAZON.CancelIntent'
-        || request.intent.name === 'AMAZON.StopIntent');
-  },
-  handle(handlerInput) {
-    return handlerInput.responseBuilder
-      .speak(STOP_MESSAGE)
-      .getResponse();
-  },
-};
-
-const SessionEndedRequestHandler = {
-  canHandle(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
-    return request.type === 'SessionEndedRequest';
-  },
-  handle(handlerInput) {
-    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
-
-    return handlerInput.responseBuilder.getResponse();
-  },
-};
-
-const ErrorHandler = {
-  canHandle() {
-    return true;
-  },
-  handle(handlerInput, error) {
-    console.log(`Error handled: ${error.message}`);
-
-    return handlerInput.responseBuilder
-      .speak('Sorry, an error occurred.')
-      .reprompt('Sorry, an error occurred.')
-      .getResponse();
-  },
-};
+// const LaunchRequestHandler = {
+//   canHandle(handlerInput) {
+//     const attributesManager = handlerInput.attributesManager;
+//     const sessionAttributes = attributesManager.getSessionAttributes() || {};
+//     const name = sessionAttributes.hasOwnProperty('name') ? sessionAttributes.name : 0;
+//
+//     return handlerInput.requestEnvelope.request.type === 'LaunchRequest' && name;
+//   },
+//   handle(handlerInput) {
+//     const attributesManager = handlerInput.attributesManager;
+//     const sessionAttributes = attributesManager.getSessionAttributes() || {};
+//     const name = sessionAttributes.hasOwnProperty('name') ? sessionAttributes.name : 0;
+//
+//     const speechText = `Ciao ${name}!`;
+//     return handlerInput.responseBuilder
+//       .speak(speechText)
+//       //.reprompt(speechText)
+//       .getResponse();
+//   }
+// };
 
 
-const skillBuilder = Alexa.SkillBuilders.standard();
+// const LoadNameInterceptor = {
+  // async process(handlerInput) {
+  //   const attributesManager = handlerInput.attributesManager;
+  //   const sessionAttributes = await attributesManager.getPersistentAttributes() || {};
+  //
+  //   const name = sessionAttributes.hasOwnProperty('name') ? sessionAttributes.name : 0;
+  //
+  //   if (name) {
+  //     attributesManager.setSessionAttributes(sessionAttributes);
+  //   }
+  // }
+// };
 
-exports.handler = skillBuilder
+exports.handler = Alexa.SkillBuilders.custom()
+  // .withPersistenceAdapter(
+  //   new persistenceAdapter.S3PersistenceAdapter({bucketName:"ciao"}))
   .addRequestHandlers(
-    FirstTimeLaunchRequestHandler,
+    // LaunchRequestHandler,
+    FirstLaunchRequestHandler,
     NameRequestHandler,
-    HelpHandler,
-    ExitHandler,
-    SessionEndedRequestHandler
-  )
-  .addErrorHandlers(ErrorHandler)
+    HelpIntentHandler,
+    CancelAndStopIntentHandler,
+    SessionEndedRequestHandler,
+    IntentReflectorHandler)
+  // .addRequestInterceptors(
+  //   LoadNameInterceptor)
+  .addErrorHandlers(
+    ErrorHandler)
   .lambda();

@@ -1,0 +1,42 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "training",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "NameIntent",
+          "slots": [
+            {
+              "name": "name",
+              "type": "AMAZON.FirstName"
+            }
+          ],
+          "samples": [
+            "Il mio nome è {name}",
+            "Sono {name}",
+            "Io sono {name}",
+            "{name}",
+            "Mi chiamo {name}"
+          ]
+        }
+      ],
+      "types": []
+    }
+  }
+}
