@@ -15,10 +15,24 @@ dbHelper.prototype.addUser = (name) => {
       }
     };
     docClient.put(params, (err, data) => {
-      if (err) {
-        return reject(err);
+      if (err) reject(err);
+      else resolve(data);
+    });
+  });
+};
+
+dbHelper.prototype.getUserData = (name) => {
+  return new Promise((resolve, reject) => {
+    var params = {
+      TableName : tableName,
+      Key: {
+        user: name
       }
-      resolve(data);
+    };
+
+    docClient.get(params, function(err, data) {
+      if (err) reject(err);
+      else resolve(data);
     });
   });
 };

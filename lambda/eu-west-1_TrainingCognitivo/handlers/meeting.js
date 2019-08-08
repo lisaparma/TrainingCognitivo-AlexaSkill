@@ -20,30 +20,27 @@ const NameRequestHandler = {
   },
   async handle(handlerInput) {
     const name = handlerInput.requestEnvelope.request.intent.slots.name.value;
-    // const attributesManager = handlerInput.attributesManager;
-    // const nameAttribute = {
-    //   "name": name,
-    // };
-    // attributesManager.setPersistentAttributes(nameAttribute);
-    // await attributesManager.savePersistentAttributes();
 
-    dbHelper.addUser(name)
+    // Add session attribute
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes() || {};
+    sessionAttributes.name = name;
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+    // Save name on DynamoDB
+    let speechText = "not set;"
+    await dbHelper.addUser(name)
       .then((data) => {
-        console.log(data);
-        const speechText = `Salvato`;
-        return handlerInput.responseBuilder
-          .speak(speechText)
-          .reprompt(speechText)
-          .getResponse();
+        console.log('ok');
+        speechText = `Salvato`;
       })
       .catch((err) => {
         console.log(err);
-        const speechText = "Errore nel salvataggio";
-        return handlerInput.responseBuilder
-          .speak(speechText)
-          .reprompt(speechText)
-          .getResponse();
+        speechText = "Errore nel salvataggio";
       });
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .getResponse();
   }
 };
 
