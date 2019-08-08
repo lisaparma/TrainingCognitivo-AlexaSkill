@@ -1,10 +1,8 @@
 const Alexa = require('ask-sdk-core');
-// const persistenceAdapter = require('ask-sdk-s3-persistence-adapter');
+const dbHelper = require('./databaseHelper');
 
 const { HelpIntentHandler, CancelAndStopIntentHandler, SessionEndedRequestHandler, IntentReflectorHandler,ErrorHandler } = require('./handlers/standard.js');
 const { FirstLaunchRequestHandler, NameRequestHandler } = require('./handlers/meeting.js');
-
-const dbHelper = require('./databaseHelper');
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -30,16 +28,16 @@ const LaunchRequestHandler = {
 const LoadNameInterceptor = {
   async process(handlerInput) {
     if (handlerInput.requestEnvelope.request.type === 'LaunchRequest') {
-      const attributesManager = handlerInput.attributesManager;
+      const userId = handlerInput.requestEnvelope.context.System.user.userId;
 
-      await dbHelper.getUserData("lisa")
+      await dbHelper.getUserData(userId)
         .then((data) => {
-          console.log(data);
           if (data.Item.user) {
-            const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-            sessionAttributes.name = data.Item.user;
+            const attributesManager = handlerInput.attributesManager;
+            const sessionAttributes = attributesManager.getSessionAttributes();
+            sessionAttributes.userId = data.Item.user;
+            sessionAttributes.name = data.Item.name;
             attributesManager.setSessionAttributes(sessionAttributes);
-            console.log(sessionAttributes);
           }
         })
         .catch((err) => {

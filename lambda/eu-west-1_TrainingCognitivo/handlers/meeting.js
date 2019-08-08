@@ -19,16 +19,18 @@ const NameRequestHandler = {
       handlerInput.requestEnvelope.request.intent.name === 'NameIntent';
   },
   async handle(handlerInput) {
+    const userId = handlerInput.requestEnvelope.context.System.user.userId;
     const name = handlerInput.requestEnvelope.request.intent.slots.name.value;
 
     // Add session attribute
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes() || {};
+    sessionAttributes.userId = userId;
     sessionAttributes.name = name;
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
     // Save name on DynamoDB
-    let speechText = "not set;"
-    await dbHelper.addUser(name)
+    let speechText = "not set";
+    await dbHelper.addUser(userId, name)
       .then((data) => {
         console.log('ok');
         speechText = `Salvato`;
@@ -39,7 +41,7 @@ const NameRequestHandler = {
       });
     return handlerInput.responseBuilder
       .speak(speechText)
-      .reprompt(speechText)
+      // .reprompt(speechText)
       .getResponse();
   }
 };

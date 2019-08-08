@@ -5,13 +5,14 @@ const tableName = "TrainingCognitivo";
 
 var dbHelper = function () { };
 
-dbHelper.prototype.addUser = (name) => {
+dbHelper.prototype.addUser = (userId, name) => {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: tableName,
       Item: {
-        'user': name,
-        'trainings': {}
+        user: userId,
+        name: name,
+        trainings: {}
       }
     };
     docClient.put(params, (err, data) => {
@@ -21,12 +22,12 @@ dbHelper.prototype.addUser = (name) => {
   });
 };
 
-dbHelper.prototype.getUserData = (name) => {
+dbHelper.prototype.getUserData = (userId) => {
   return new Promise((resolve, reject) => {
     var params = {
       TableName : tableName,
       Key: {
-        user: name
+        user: userId
       }
     };
 
